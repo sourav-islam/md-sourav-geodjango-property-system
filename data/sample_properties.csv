@@ -1,0 +1,22 @@
+title,description,property_type,status,price,bedrooms,bathrooms,area_sqft,address,latitude,longitude,location_name,amenities,is_featured
+"Cox's Bazar Beachfront Villa","Beautiful beachfront villa with stunning ocean views",villa,available,15000.00,4,3,2500.00,"Beach Road, Cox's Bazar",21.4272,91.9785,"Cox's Bazar","wifi,pool,beach access,ac",true
+"Sylhet Tea Garden Cabin","Cozy cabin nestled in the tea gardens of Sylhet",cabin,available,8000.00,2,1,800.00,"Tea Estate Road, Sylhet",24.8949,91.8687,Sylhet,"wifi,garden view,fireplace",false
+"Bandarban Hilltop Apartment","Modern apartment with panoramic hill views",apartment,available,12000.00,3,2,1200.00,"Thanchi Road, Bandarban",22.1955,92.2182,Bandarban,"wifi,ac,balcony",true
+"Sundarbans Eco Resort","Eco-friendly resort in the heart of Sundarbans",villa,available,18000.00,5,4,3000.00,"Sundarbans Reserve Forest",22.3000,89.5000,Sundarbans,"wifi,wildlife tour,boat ride",true
+"Saint Martin Island Beach House","Beach house on the beautiful Saint Martin Island",house,available,20000.00,4,3,2200.00,"Beach Front, Saint Martin Island",20.6333,92.3167,"Saint Martin Island","wifi,beach access,snorkeling",true
+"Dhaka City Luxury Apartment","Luxury apartment in the heart of Dhaka city",apartment,booked,25000.00,3,3,1800.00,"Gulshan, Dhaka",23.8103,90.4125,Dhaka,"wifi,ac,gym,pool",true
+"Chittagong Sea View Condo","Condo with sea views in Chittagong",condo,available,14000.00,3,2,1500.00,"Agrabad, Chittagong",22.3569,91.7832,Chittagong,"wifi,ac,sea view",false
+"Kuakata Beach Cottage","Cute cottage right on Kuakata beach",cabin,available,7500.00,2,1,700.00,"Kuakata Beach",21.8167,90.1167,Kuakata,"wifi,beach access,garden",false
+"Rangamati Lake View Villa","Villa overlooking beautiful Rangamati lake",villa,available,16000.00,4,3,2400.00,"Lake Road, Rangamati",22.6500,92.1833,Rangamati,"wifi,lake view,boat ride",true
+"Bogra Historical House","Historical house in Bogra with traditional decor",house,inactive,9000.00,3,2,1000.00,"Old Town, Bogra",24.8500,89.3667,Bogra,"wifi,garden,historical tour",false
+"Rajshahi Riverside Apartment","Apartment with views of the Padma river",apartment,available,11000.00,3,2,1100.00,"Riverside, Rajshahi",24.3667,88.6000,Rajshahi,"wifi,river view,ac",false
+"Khulna Port View House","House with views of Khulna port",house,available,10000.00,3,2,1300.00,"Port Area, Khulna",22.8167,89.5667,Khulna,"wifi,port view,garden",false
+"Barisal Backwater Villa","Villa in the beautiful backwaters of Barisal",villa,available,13000.00,4,3,2000.00,"Backwater Road, Barisal",22.7000,90.3667,Barisal,"wifi,backwater tour,garden",true
+"Mymensingh Farmhouse","Charming farmhouse in Mymensingh",house,available,8500.00,3,2,1400.00,"Farm Road, Mymensingh",24.7500,90.4000,Mymensingh,"wifi,farm tour,garden",false
+"Comilla Hilltop Cabin","Cabin on a hilltop in Comilla with great views",cabin,available,7000.00,2,1,600.00,"Hilltop, Comilla",23.4667,91.2000,Comilla,"wifi,hill view,garden",false
+"Narayanganj Riverfront Condo","Condo on the riverfront in Narayanganj",condo,available,12500.00,3,2,1350.00,"Riverfront, Narayanganj",23.6167,90.5000,Narayanganj,"wifi,river view,ac",false
+"Gazipur Resort Villa","Villa in a resort in Gazipur",villa,booked,17000.00,4,3,2300.00,"Resort Road, Gazipur",23.9917,90.4167,Gazipur,"wifi,pool,gym,garden",true
+"Tangail Country House","Country house in Tangail with peaceful surroundings",house,available,9500.00,3,2,1200.00,"Country Road, Tangail",24.2500,89.9167,Tangail,"wifi,garden,peaceful",false
+"Kushtia Rural Cottage","Rural cottage in Kushtia with authentic experience",cabin,available,6500.00,2,1,550.00,"Rural Area, Kushtia",23.9000,89.1167,Kushtia,"wifi,rural experience,garden",false
+"Pabna Lake House","Lake house in Pabna with beautiful views",house,available,10500.00,3,2,1250.00,"Lake Side, Pabna",24.0000,89.2333,Pabna,"wifi,lake view,garden",false
+"Jhenaidah Garden Villa","Villa with a large garden in Jhenaidah",villa,available,14000.00,4,3,2100.00,"Garden Road, Jhenaidah",23.5333,89.1833,Jhenaidah,"wifi,garden,pool",false
