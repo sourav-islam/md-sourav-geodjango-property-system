@@ -1,0 +1,147 @@
+{% extends 'property_app/base.html' %}
+{% load static %}
+
+{% block title %}Properties - VacaStay{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 mb-4 mb-lg-0">
+                <div class="card filter-card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Filters</h5>
+                        <form method="get" action="{% url 'property_list' %}">
+                            <div class="mb-3">
+                                <label for="location" class="form-label">Location</label>
+                                <input type="text" class="form-control" id="location" name="location" value="{{ location }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="property_type" class="form-label">Property Type</label>
+                                <select class="form-select" id="property_type" name="property_type">
+                                    <option value="">Any Type</option>
+                                    {% for type in property_types %}
+                                    <option value="{{ type.0 }}" {% if property_type == type.0 %}selected{% endif %}>{{ type.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="min_price" class="form-label">Min Price</label>
+                                <input type="number" class="form-control" id="min_price" name="min_price" value="{{ min_price }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="max_price" class="form-label">Max Price</label>
+                                <input type="number" class="form-control" id="max_price" name="max_price" value="{{ max_price }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="bedrooms" class="form-label">Minimum Bedrooms</label>
+                                <select class="form-select" id="bedrooms" name="bedrooms">
+                                    <option value="">Any</option>
+                                    <option value="1" {% if bedrooms == '1' %}selected{% endif %}>1+</option>
+                                    <option value="2" {% if bedrooms == '2' %}selected{% endif %}>2+</option>
+                                    <option value="3" {% if bedrooms == '3' %}selected{% endif %}>3+</option>
+                                    <option value="4" {% if bedrooms == '4' %}selected{% endif %}>4+</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label for="radius_km" class="form-label">Search Radius</label>
+                                <select class="form-select" id="radius_km" name="radius_km">
+                                    <option value="10" {% if radius_km == '10' %}selected{% endif %}>10 km</option>
+                                    <option value="25" {% if radius_km == '25' %}selected{% endif %}>25 km</option>
+                                    <option value="50" {% if radius_km == '50' %}selected{% endif %}>50 km</option>
+                                    <option value="100" {% if radius_km == '100' %}selected{% endif %}>100 km</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>{{ properties|length }} Properties Found</h4>
+                </div>
+                
+                {% if properties %}
+                <div class="row g-4">
+                    {% for property in properties %}
+                    <div class="col-md-6 col-xl-4">
+                        <div class="card property-card h-100">
+                            <div class="card-img-top placeholder-img d-flex align-items-center justify-content-center" style="height: 200px;">
+                                {% if property.primary_image %}
+                                    <img src="{{ property.primary_image.image.url }}" class="img-fluid h-100 w-100 object-fit-cover" alt="{{ property.primary_image.alt_text|default:property.title }}">
+                                {% else %}
+                                    <i class="bi bi-house text-white display-3"></i>
+                                {% endif %}
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title mb-0 text-truncate">{{ property.title }}</h5>
+                                    <span class="badge bg-primary">{{ property.property_type|capfirst }}</span>
+                                </div>
+                                <p class="card-text text-muted small mb-2">
+                                    <i class="bi bi-geo-alt me-1"></i>{{ property.location.name }}
+                                </p>
+                                {% if property.distance %}
+                                <p class="card-text text-info small mb-2">
+                                    <i class="bi bi-map me-1"></i>
+                                    {% if property.distance.km %}{{ property.distance.km|floatformat:1 }}{% else %}{{ property.distance|floatformat:1 }}{% endif %} km away
+                                </p>
+                                {% endif %}
+                                <div class="d-flex align-items-center mb-3">
+                                    <span class="fw-bold text-primary fs-5 me-auto">৳{{ property.price }}/night</span>
+                                    <span class="text-muted small">
+                                        <i class="bi bi-house-door me-1"></i>{{ property.bedrooms }}
+                                        <i class="bi bi-door-open ms-2 me-1"></i>{{ property.bathrooms }}
+                                    </span>
+                                </div>
+                                <a href="{% url 'property_detail' property.slug %}" class="btn btn-outline-primary w-100">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                {% if is_paginated %}
+                <nav class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item"><a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a></li>
+                        {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-house-x text-muted display-1 mb-4"></i>
+                    <h3>No properties found</h3>
+                    <p class="text-muted">Try adjusting your filters</p>
+                    <a href="{% url 'property_list' %}" class="btn btn-primary">Clear Filters</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
