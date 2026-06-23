@@ -1,8 +1,10 @@
 .hero-section {
     position: relative;
-    height: 500px;
+    min-height: 500px;
+    height: auto;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     overflow: hidden;
+    padding: 2rem 0;
 }
 
 .hero-overlay {
@@ -24,6 +26,14 @@
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 1000;
+}
+
+#autocomplete-dropdown {
+    z-index: 2000 !important;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 .property-card {
