@@ -1,0 +1,124 @@
+{% extends 'property_app/base.html' %}
+{% load static %}
+
+{% block title %}Home - VacaStay{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="container h-100">
+        <div class="row h-100 align-items-center justify-content-center text-center">
+            <div class="col-lg-8 col-xl-6">
+                <h1 class="text-white display-3 fw-bold mb-4">Find Your Perfect Vacation Rental</h1>
+                <p class="text-white lead mb-5">Discover amazing properties in the most beautiful locations</p>
+                
+                <form method="get" action="{% url 'property_list' %}" class="search-form">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="location" name="location" placeholder="Location" value="{{ request.GET.location }}">
+                                <label for="location">Location</label>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-2">
+                            <div class="form-floating">
+                                <select class="form-select" id="property_type" name="property_type">
+                                    <option value="">Any Type</option>
+                                    <option value="house">House</option>
+                                    <option value="apartment">Apartment</option>
+                                    <option value="villa">Villa</option>
+                                    <option value="cabin">Cabin</option>
+                                    <option value="condo">Condo</option>
+                                </select>
+                                <label for="property_type">Type</label>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-2">
+                            <div class="form-floating">
+                                <select class="form-select" id="bedrooms" name="bedrooms">
+                                    <option value="">Any</option>
+                                    <option value="1">1+ Bed</option>
+                                    <option value="2">2+ Beds</option>
+                                    <option value="3">3+ Beds</option>
+                                    <option value="4">4+ Beds</option>
+                                </select>
+                                <label for="bedrooms">Bedrooms</label>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-2">
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="min_price" name="min_price" placeholder="Min Price" value="{{ request.GET.min_price }}">
+                                <label for="min_price">Min Price</label>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-2">
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="max_price" name="max_price" placeholder="Max Price" value="{{ request.GET.max_price }}">
+                                <label for="max_price">Max Price</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-3">
+                        <div class="col-12 col-md-8">
+                            <div class="form-floating">
+                                <select class="form-select" id="radius_km" name="radius_km">
+                                    <option value="10">10 km</option>
+                                    <option value="25">25 km</option>
+                                    <option value="50" selected>50 km</option>
+                                    <option value="100">100 km</option>
+                                </select>
+                                <label for="radius_km">Search Radius</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <button type="submit" class="btn btn-lg btn-success w-100">
+                                <i class="bi bi-search me-2"></i>Search
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if featured_properties %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Featured Properties</h2>
+        <div class="row g-4">
+            {% for property in featured_properties %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card property-card h-100">
+                            <div class="card-img-top placeholder-img d-flex align-items-center justify-content-center" style="height: 200px;">
+                                {% if property.primary_image %}
+                                    <img src="{{ property.primary_image.image.url }}" class="img-fluid h-100 w-100 object-fit-cover" alt="{{ property.primary_image.alt_text|default:property.title }}">
+                                {% else %}
+                                    <i class="bi bi-house text-white display-3"></i>
+                                {% endif %}
+                            </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0">{{ property.title }}</h5>
+                            <span class="badge bg-primary">{{ property.property_type|capfirst }}</span>
+                        </div>
+                        <p class="card-text text-muted small mb-2">
+                            <i class="bi bi-geo-alt me-1"></i>{{ property.location.name }}
+                        </p>
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="fw-bold text-primary fs-5 me-auto">৳{{ property.price }}/night</span>
+                            <span class="text-muted small">
+                                <i class="bi bi-house-door me-1"></i>{{ property.bedrooms }}
+                                <i class="bi bi-door-open ms-2 me-1"></i>{{ property.bathrooms }}
+                            </span>
+                        </div>
+                        <a href="{% url 'property_detail' property.slug %}" class="btn btn-outline-primary w-100">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

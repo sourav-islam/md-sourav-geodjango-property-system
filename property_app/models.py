@@ -77,6 +77,15 @@ class Property(models.Model):
     def __str__(self):
         return self.title
 
+    @property
+    def primary_image(self):
+        # First try to find the primary image
+        primary = self.images.filter(is_primary=True).first()
+        if primary:
+            return primary
+        # If no primary image, return the first one
+        return self.images.first()
+
 
 class PropertyImage(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="images")
