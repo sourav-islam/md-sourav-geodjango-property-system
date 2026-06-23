@@ -14,13 +14,14 @@
                 
                 <form method="get" action="{% url 'property_list' %}" class="search-form">
                     <div class="row g-3">
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <div class="form-floating">
-                                <input type="text" class="form-control" id="location" name="location" placeholder="Location" value="{{ request.GET.location }}">
+                        <div class="col-12">
+                            <div class="form-floating position-relative">
+                                <input type="text" class="form-control" id="location" name="location" placeholder="Location" value="{{ request.GET.location }}" autocomplete="off">
                                 <label for="location">Location</label>
+                                <div id="autocomplete-dropdown" class="dropdown-menu position-absolute w-100" style="display: none;"></div>
                             </div>
                         </div>
-                        <div class="col-6 col-md-3 col-lg-2">
+                        <div class="col-6 col-md-4 col-lg-2">
                             <div class="form-floating">
                                 <select class="form-select" id="property_type" name="property_type">
                                     <option value="">Any Type</option>
@@ -33,7 +34,7 @@
                                 <label for="property_type">Type</label>
                             </div>
                         </div>
-                        <div class="col-6 col-md-3 col-lg-2">
+                        <div class="col-6 col-md-4 col-lg-2">
                             <div class="form-floating">
                                 <select class="form-select" id="bedrooms" name="bedrooms">
                                     <option value="">Any</option>
@@ -45,21 +46,19 @@
                                 <label for="bedrooms">Bedrooms</label>
                             </div>
                         </div>
-                        <div class="col-6 col-md-3 col-lg-2">
+                        <div class="col-6 col-md-4 col-lg-2">
                             <div class="form-floating">
                                 <input type="number" class="form-control" id="min_price" name="min_price" placeholder="Min Price" value="{{ request.GET.min_price }}">
                                 <label for="min_price">Min Price</label>
                             </div>
                         </div>
-                        <div class="col-6 col-md-3 col-lg-2">
+                        <div class="col-6 col-md-6 col-lg-3">
                             <div class="form-floating">
                                 <input type="number" class="form-control" id="max_price" name="max_price" placeholder="Max Price" value="{{ request.GET.max_price }}">
                                 <label for="max_price">Max Price</label>
                             </div>
                         </div>
-                    </div>
-                    <div class="row g-3 mt-3">
-                        <div class="col-12 col-md-8">
+                        <div class="col-12 col-md-6 col-lg-3">
                             <div class="form-floating">
                                 <select class="form-select" id="radius_km" name="radius_km">
                                     <option value="10">10 km</option>
@@ -70,7 +69,7 @@
                                 <label for="radius_km">Search Radius</label>
                             </div>
                         </div>
-                        <div class="col-12 col-md-4">
+                        <div class="col-12">
                             <button type="submit" class="btn btn-lg btn-success w-100">
                                 <i class="bi bi-search me-2"></i>Search
                             </button>
@@ -121,4 +120,103 @@
     </div>
 </section>
 {% endif %}
+
+<script>
+    const locationInput = document.getElementById('location');
+    const autocompleteDropdown = document.getElementById('autocomplete-dropdown');
+    let debounceTimer;
+
+    // Debounce function to limit API calls
+    function debounce(func, delay) {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(func, delay);
+    }
+
+    // Fetch autocomplete suggestions
+    async function fetchSuggestions(query) {
+        if (!query.trim()) {
+            autocompleteDropdown.style.display = 'none';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/locations/autocomplete/?q=${encodeURIComponent(query)}`);
+            const suggestions = await response.json();
+            renderSuggestions(suggestions);
+        } catch (error) {
+            console.error('Error fetching suggestions:', error);
+        }
+    }
+
+    // Render suggestions in dropdown
+    function renderSuggestions(suggestions) {
+        if (suggestions.length === 0) {
+            autocompleteDropdown.style.display = 'none';
+            return;
+        }
+
+        autocompleteDropdown.innerHTML = suggestions.map(suggestion => `
+            <button class="dropdown-item" type="button" data-name="${suggestion.name}">
+                <div class="d-flex justify-content-between">
+                    <span>${suggestion.name}</span>
+                    <small class="text-muted">${suggestion.property_count} properties</small>
+                </div>
+                ${suggestion.similarity ? `<small class="text-success">${(suggestion.similarity * 100).toFixed(0)}% match</small>` : ''}
+            </button>
+        `).join('');
+
+        autocompleteDropdown.style.display = 'block';
+
+        // Add click event listeners to suggestions
+        const dropdownItems = autocompleteDropdown.querySelectorAll('.dropdown-item');
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', () => {
+                locationInput.value = item.dataset.name;
+                autocompleteDropdown.style.display = 'none';
+            });
+        });
+    }
+
+    // Event listener for input
+    locationInput.addEventListener('input', (e) => {
+        debounce(() => fetchSuggestions(e.target.value), 300);
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!locationInput.contains(e.target) && !autocompleteDropdown.contains(e.target)) {
+            autocompleteDropdown.style.display = 'none';
+        }
+    });
+
+    // Keyboard navigation
+    let selectedIndex = -1;
+    locationInput.addEventListener('keydown', (e) => {
+        const items = autocompleteDropdown.querySelectorAll('.dropdown-item');
+        
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+            updateSelectedItem(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            selectedIndex = Math.max(selectedIndex - 1, 0);
+            updateSelectedItem(items);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (selectedIndex >= 0 && items[selectedIndex]) {
+                items[selectedIndex].click();
+            }
+        } else if (e.key === 'Escape') {
+            autocompleteDropdown.style.display = 'none';
+            selectedIndex = -1;
+        }
+    });
+
+    function updateSelectedItem(items) {
+        items.forEach((item, index) => {
+            item.classList.toggle('active', index === selectedIndex);
+        });
+    }
+</script>
 {% endblock %}

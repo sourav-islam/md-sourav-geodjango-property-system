@@ -2,7 +2,9 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, ListView, DetailView
 from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Distance
+from pgvector.django import CosineDistance
 from .models import Property, Location
+from .embeddings import embed_text
 
 
 class HomepageView(TemplateView):
@@ -31,7 +33,24 @@ class PropertyListView(ListView):
         radius_km = int(self.request.GET.get('radius_km', 50))
         
         if location_query:
-            location = Location.objects.filter(name__icontains=location_query, is_active=True).first()
+            # Step 1: Try exact name match
+            location = Location.objects.filter(name__iexact=location_query, is_active=True).first()
+            
+            # Step 2: If no exact match, try semantic search on Location embeddings
+            if not location:
+                try:
+                    query_embedding = embed_text(location_query)
+                    location = Location.objects.filter(
+                        embedding__isnull=False,
+                        is_active=True
+                    ).annotate(
+                        similarity=CosineDistance('embedding', query_embedding)
+                    ).order_by('similarity').first()
+                except Exception as e:
+                    print(f"Error in semantic location search: {e}")
+                    location = None
+            
+            # Step 3: Apply geo filter if location found with point
             if location and location.point:
                 queryset = queryset.filter(
                     point__distance_lte=(location.point, D(km=radius_km))
@@ -40,7 +59,18 @@ class PropertyListView(ListView):
                 ).order_by('distance')
                 self.found_location = location
             else:
-                self.found_location = None
+                # Step 4: Fallback — semantic search directly on property embeddings
+                try:
+                    query_embedding = embed_text(location_query)
+                    queryset = queryset.filter(
+                        embedding__isnull=False
+                    ).annotate(
+                        similarity=CosineDistance('embedding', query_embedding)
+                    ).order_by('similarity')
+                    self.found_location = None
+                except Exception as e:
+                    print(f"Error in semantic property search: {e}")
+                    self.found_location = None
         else:
             self.found_location = None
         
